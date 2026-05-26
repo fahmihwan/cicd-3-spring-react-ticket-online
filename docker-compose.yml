@@ -1,1 +1,15 @@
-cd
+services:
+    postgres:
+        image: postgres:16
+        container_name: ticketonline_postgres
+        ports:
+            - "54322:5432"
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: carrental_docker
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: fahmi123
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
