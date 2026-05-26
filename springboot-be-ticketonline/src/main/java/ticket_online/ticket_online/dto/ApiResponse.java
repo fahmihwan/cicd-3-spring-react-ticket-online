@@ -1,0 +1,17 @@
+package ticket_online.ticket_online.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class ApiResponse<T> {
+
+    private Boolean success;
+    private String messages;
+    private T data;
+}
