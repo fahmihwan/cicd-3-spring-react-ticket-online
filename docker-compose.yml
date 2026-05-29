@@ -1,15 +1,48 @@
 services:
-    postgres:
+    postgresql:
         image: postgres:16
         container_name: ticketonline_postgres
         ports:
             - "54322:5432"
         restart: unless-stopped
         environment:
-            POSTGRES_DB: carrental_docker
+            POSTGRES_DB: db_spring_event_ticket
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: fahmi123
-        ports:
-            - "5432:5432"
         volumes:
             - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d db_spring_event_ticket"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+    backend:
+        build:
+            context: ./springboot-be-ticketonline
+            dockerfile: Docker/Dockerfile.nginx.staging
+        container_name: ticketonline_backend
+        ports:
+            - "8080:80"
+        restart: unless-stopped
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/db_spring_event_ticket
+            SPRING_DATASOURCE_USERNAME: postgres
+            SPRING_DATASOURCE_PASSWORD: fahmi123
+            SPRING_PROFILES_ACTIVE: staging
+        depends_on:
+            postgresql:
+                condition: service_healthy
+
+    frontend:
+        build: 
+            context: ./react-fe-ticketonline
+            dockerfile: Docker/Dockerfile.nginx.staging
+        container_name: ticketonline_frontend
+        ports:
+            - "3000:3000"
+        restart: unless-stopped
+        depends_on:
+            - backend
+
+volumes:
+    postgres_data:
