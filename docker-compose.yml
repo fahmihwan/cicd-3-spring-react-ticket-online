@@ -23,15 +23,10 @@ services:
             network: host
         container_name: ticketonline_backend
         ports:
-            - "2005:8080"
+            - "2005:80"
         restart: unless-stopped
         env_file:
             - ./springboot-be-ticketonline/.env
-        environment:
-            SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/db_spring_event_ticket
-            SPRING_DATASOURCE_USERNAME: postgres
-            SPRING_DATASOURCE_PASSWORD: fahmi123
-            SPRING_PROFILES_ACTIVE: staging
         volumes:
             - backend_uploads:/app/uploaded-images
         depends_on:

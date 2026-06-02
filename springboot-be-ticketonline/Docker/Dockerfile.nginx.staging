@@ -13,10 +13,19 @@ FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nginx supervisor \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default
+
 COPY --from=build /app/target/*.jar /app/app.jar
+COPY Docker/Config/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY Docker/Services/start-container.sh /app/start-container.sh
+COPY Docker/Services/supervisord.nginx.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN mkdir -p /app/uploaded-images
+RUN mkdir -p /app/uploaded-images /var/log/nginx /var/cache/nginx /run/nginx \
+    && chmod +x /app/start-container.sh
 
-EXPOSE 8080
+EXPOSE 80
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
