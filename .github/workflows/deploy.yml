@@ -19,5 +19,5 @@ jobs:
             cd /var/www/cicd-3-spring-react-ticket-online
             git pull origin main
             docker compose down
-            docker compose build --no-cache
+            docker compose build 
             docker compose up -d
