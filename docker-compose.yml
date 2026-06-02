@@ -20,15 +20,20 @@ services:
         build:
             context: ./springboot-be-ticketonline
             dockerfile: Docker/Dockerfile.nginx.staging
+            network: host
         container_name: ticketonline_backend
         ports:
-            - "8080:80"
+            - "2005:8080"
         restart: unless-stopped
+        env_file:
+            - ./springboot-be-ticketonline/.env
         environment:
             SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/db_spring_event_ticket
             SPRING_DATASOURCE_USERNAME: postgres
             SPRING_DATASOURCE_PASSWORD: fahmi123
             SPRING_PROFILES_ACTIVE: staging
+        volumes:
+            - backend_uploads:/app/uploaded-images
         depends_on:
             postgresql:
                 condition: service_healthy
@@ -37,12 +42,16 @@ services:
         build: 
             context: ./react-fe-ticketonline
             dockerfile: Docker/Dockerfile.nginx.staging
+            network: host
+            args:
+                VITE_API_BE_URL: ""
         container_name: ticketonline_frontend
         ports:
-            - "3000:3000"
+            - "1005:80"
         restart: unless-stopped
         depends_on:
             - backend
 
 volumes:
     postgres_data:
+    backend_uploads:
